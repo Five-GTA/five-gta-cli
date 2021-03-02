@@ -1,0 +1,13 @@
+{
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.preferences.quoteStyle": "double",
+    "typescript.format.placeOpenBraceOnNewLineForControlBlocks": true,
+    "typescript.format.placeOpenBraceOnNewLineForFunctions": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.organizeImports": true,
+    },
+    "git.ignoreLimitWarning": true,
+    "emmet.showExpandedAbbreviation": "never",
+}
