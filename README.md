@@ -1,6 +1,6 @@
 # five-gta-cli
 
-npm link: <a href="https://www.npmjs.com/package/five-gta-cli">https://www.npmjs.com/package/five-gta-cli</a>
+npm link: <a target="_blank" href="https://www.npmjs.com/package/five-gta-cli">https://www.npmjs.com/package/five-gta-cli</a>
 
 ## Install:
 ```
