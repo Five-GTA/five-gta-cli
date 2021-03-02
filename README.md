@@ -1,4 +1,4 @@
-# five-cli
+# five-gta-cli
 
 ## Install:
 ```
