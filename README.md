@@ -1,10 +1,10 @@
 # five-cli
 
-# install:
+## Install:
 ```
 npm i -g five-gta-cli
 ```
-# usage:
+## Usage:
 - All commands works based on you current directory.
 ```
 Use: five-gta-cli
