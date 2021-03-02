@@ -89,7 +89,7 @@ export class ServerService {
                     this.writeInFivem(`stop ${obj.data}`);
                     this.writeInFivem("refresh");
                     this.writeInFivem(`start ${obj.data}`);
-                    logSuccess(`Resource ${obj.data} reloaded`);
+                    logSuccess(`Received signal to reload ${obj.data}`);
                     setTitle(`✔ ${obj.data} reloaded`);
                     break;
                 default:
