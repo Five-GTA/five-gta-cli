@@ -2,8 +2,9 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import fs from "fs";
 import net from "net";
 import readline from "readline";
-import { exitError, parseJson } from "../util";
-import { FN_SERVER_CONFIG, ServerConfig } from "./Config";
+import { logError, logSuccess } from "../logger";
+import { exitError, parseJson, setTitle } from "../util";
+import { FN_SERVER_CONFIG, ServerConfig } from "./ConfigSerivce";
 
 const SERVER_PORT = 30069;
 
@@ -36,18 +37,18 @@ class SocketWrapper {
     }
 }
 
-export class Server {
+export class ServerService {
 
     private config:ServerConfig;
     private proc:ChildProcessWithoutNullStreams;
 
     constructor(){
         if (!fs.existsSync(FN_SERVER_CONFIG)){
-            exitError("[FIVE-CLI] server config not exists.");
+            exitError("Server config not exists");
         }
         const config = parseJson(fs.readFileSync(FN_SERVER_CONFIG).toLocaleString()) as ServerConfig;
         if (!config.startCommand || !config.workDir){
-            exitError("[FIVE-CLI] Invalid server config.");
+            exitError("Invalid server config");
         }
         this.config = config;
         this.listen();
@@ -59,14 +60,20 @@ export class Server {
         proc.stdout.on("data", (data) => process.stdout.write(data));
         proc.stderr.on("data", process.stderr.write);
         proc.on("exit", (code) => {
-            exitError(`[FIVE-CLI] Child exited with code ${code}`);
+            exitError(`Child exited with code ${code}`);
         });
-        const promt = readline.createInterface({
+        
+        const prompt = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
         });
-        promt.on("line", (inp)=> {proc.stdin.write(inp+"\n");});
+        //Proxy prompt
+        prompt.on("line", (line)=> {proc.stdin.write(`${line}\n`);});
         return proc;
+    }
+
+    public writeInFivem(command:string):void{
+        this.proc.stdin.write(`${command}\n`);
     }
 
     public listen():void {
@@ -77,19 +84,22 @@ export class Server {
                 switch (obj.type){
                 //TODO: Move this to anotother func/file
                 case "restart":
-                    this.proc.stdin.write("refresh\n");
-                    this.proc.stdin.write(`stop ${obj.data}\n`);
-                    this.proc.stdin.write("refresh\n");
-                    this.proc.stdin.write(`start ${obj.data}\n`);
+                    setTitle(`🔃 - ${obj.data}`);
+                    this.writeInFivem("refresh");
+                    this.writeInFivem(`stop ${obj.data}`);
+                    this.writeInFivem("refresh");
+                    this.writeInFivem(`start ${obj.data}`);
+                    setTitle(`✔ ${obj.data} reloaded`);
                     break;
                 default:
-                    console.error("[FIVE-CLI] invalid server command.");
+                    logError("Invalid server command");
                     break;
                 }
             });
         });
         tcp.listen(SERVER_PORT, "127.0.0.1", ()=>{
-            console.info(`[FIVE-CLI] TCP Server: Start listening on port: ${SERVER_PORT}`);
+            logSuccess(`TCP Server: Start listening on port: ${SERVER_PORT}`);
+            setTitle("⌛ Waiting modifications...");
         });
     }
 }

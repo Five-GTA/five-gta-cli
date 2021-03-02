@@ -1,20 +1,21 @@
 import fs from "fs";
 import { ncp } from "ncp";
+import { logSuccess } from "../logger";
 import { exitError, parseJson } from "../util";
-import { FN_RESOURCE_CONFIG, ResouceConfig } from "./Config";
-import { connectToServer } from "./Server";
+import { FN_RESOURCE_CONFIG, ResouceConfig } from "./ConfigSerivce";
+import { connectToServer } from "./ServerService";
 
-export class Resource {
+export class ResourceService {
 
     private config:ResouceConfig;
 
     constructor(){
         if (!fs.existsSync(FN_RESOURCE_CONFIG)){
-            exitError("\x1b[31m[FIVE-CLI] resource config not exists.\x1b[0m");
+            exitError("Resource config not exists");
         }
         const config = parseJson(fs.readFileSync(FN_RESOURCE_CONFIG).toLocaleString()) as ResouceConfig;
         if (!config.resourceDir || !config.deployDir || !config.resourceName){
-            exitError("\x1b[31m[FIVE-CLI] Invalid resource config.\x1b[0m");
+            exitError("Invalid resource config");
         }
         this.config = config;
         connectToServer()
@@ -23,11 +24,11 @@ export class Resource {
                     socket.send("restart", this.config.resourceName);
                     socket.close();
                 }).catch(()=>{
-                    exitError("\x1b[31m[FIVE-CLI] Error while copy to deploy directory.\x1b[0m");
+                    exitError("Error while copy to deploy directory");
                 });
-                console.log(`\x1b[32m[FIVE-CLI] successfully deployed ${this.config.resourceName} resource!\x1b[0m`);
+                logSuccess(`Successfully deployed ${this.config.resourceName} resource!`);
             }).catch(()=>{
-                exitError("\x1b[31m[FIVE-CLI] The deploytmet server not started.\x1b[0m");
+                exitError("The deploytmet server not started");
             });
     }
 
